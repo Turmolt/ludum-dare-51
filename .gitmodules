@@ -1,3 +1,6 @@
 [submodule "Assets/Plugins/G8S-Hierarchy"]
 	path = Assets/Plugins/G8S-Hierarchy
 	url = git@github.com:Turmolt/G8S-Hierarchy.git
+[submodule "Assets/Plugins/kickflip"]
+	path = Assets/Plugins/kickflip
+	url = git@github.com:Turmolt/kickflip.git
