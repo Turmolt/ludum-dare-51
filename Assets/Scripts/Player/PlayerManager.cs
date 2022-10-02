@@ -14,10 +14,14 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private TileMapManager map;
     [SerializeField] private LifeManager life;
 
+    [SerializeField] private UIManager ui;
+
 
     private MoveHistory _moveHistory = new();
 
     private float _timeSinceLastMove = MOVE_DELAY;
+
+    private bool canMove = true;
     
     void Start()
     {
@@ -32,6 +36,7 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
+        if (!canMove) return;
         if (_timeSinceLastMove < MOVE_DELAY)
         {
             _timeSinceLastMove += Time.deltaTime;
@@ -101,5 +106,11 @@ public class PlayerManager : MonoBehaviour
         if (down) input.y -= 1;
 
         return input;
+    }
+
+    public void LevelComplete()
+    {
+        canMove = false;
+        ui.ShowWinScreen();
     }
 }

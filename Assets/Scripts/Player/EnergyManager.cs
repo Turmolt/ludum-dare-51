@@ -6,8 +6,9 @@ using UnityEngine;
 
 public class EnergyManager : MonoBehaviour
 {
-    public State CurrentState => _currentState;
-    public State NextState => (State)(((int)_currentState + 1) % 3); 
+    public Observable<State> CurrentState = new(State.Red);
+    public State NextState => (State)(((int)CurrentState.value + 1) % 3); 
+    public State LastState => (State)(((int)CurrentState.value - 1 + 3) % 3); 
     public State StateAfterMove => clock.CurrentSeconds <= 1 ? NextState : CurrentState;
 
     [SerializeField] private ClockManager clock;
@@ -24,8 +25,6 @@ public class EnergyManager : MonoBehaviour
         Blue = 2
     }
 
-    private State _currentState;
-    
     public void ChangeColor()
     {
         ChangeToNextState();
@@ -33,7 +32,7 @@ public class EnergyManager : MonoBehaviour
 
     private void ChangeToNextState()
     {
-        _currentState = NextState;
+        CurrentState.value = NextState;
         UpdateColor();
     }
 
@@ -49,7 +48,7 @@ public class EnergyManager : MonoBehaviour
 
     public Color GetColor()
     {
-        return GetColor(_currentState);
+        return GetColor(CurrentState.value);
     }
     
     public Color GetColor(State state)
@@ -64,7 +63,7 @@ public class EnergyManager : MonoBehaviour
 
     public void Set(State state)
     {
-        _currentState = state;
+        CurrentState.value = state;
         UpdateColor();
     }
 }

@@ -11,7 +11,7 @@ public class TileMapManager : MonoBehaviour
     [SerializeField] private EnergyManager energy;
     [SerializeField] private Tilemap floorMap;
     [SerializeField] private Tilemap itemMap;
-
+    
     [Header("Colored Tiles")] 
     [SerializeField] private Tile redTile;
     [SerializeField] private Tile greenTile;
@@ -24,32 +24,37 @@ public class TileMapManager : MonoBehaviour
         var playerPosition = (Vector2) player.transform.position;
         var nextPosition = playerPosition + input;
         
-        var intPosition = Vector3Int.FloorToInt(nextPosition);
+        var intNextPosition = Vector3Int.FloorToInt(nextPosition);
         
-        var tile = floorMap.GetTile(intPosition);
-        
-        if (tile == null || tile.name == "Black" || tile.name.Contains(energy.StateAfterMove.ToString())) return false;
+        var nextTile = floorMap.GetTile(intNextPosition);
 
-        var item = itemMap.GetTile(intPosition);
+        if (nextTile == null || nextTile.name == "Black" || nextTile.name.Contains(energy.StateAfterMove.ToString())) return false;
 
-        if(!CheckItem(item, intPosition, ref undoAction)) return false;
+        var item = itemMap.GetTile(intNextPosition);
+
+        if(!CheckItem(item, intNextPosition, ref undoAction)) return false;
 
         var intCurrentPos = Vector3Int.FloorToInt(currentPosition);
         
         RecordUndo(floorMap, intCurrentPos, ref undoAction);
         
         floorMap.SetTile(intCurrentPos, GetTileColor());
-        
+
         currentPosition = nextPosition;
         
         player.transform.TweenPosition(nextPosition, PlayerManager.MOVE_DELAY);
-        
+
+        if (nextTile.name.Contains("Goal"))
+        {
+            player.LevelComplete();
+        }
+
         return true;
     }
 
     private Tile GetTileColor()
     {
-        switch (energy.CurrentState)
+        switch (energy.CurrentState.value)
         {
             case EnergyManager.State.Red:
                 return redTile;
