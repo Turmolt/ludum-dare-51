@@ -44,6 +44,6 @@ public class ClockManager : MonoBehaviour
     Quaternion GetRotationAtSecond(int seconds)
     {
         var delta = 360f / MAX_SECONDS;
-        return Quaternion.Euler(new Vector3(0, 0, -delta * seconds));
+        return Quaternion.Euler(new Vector3(0, 0, delta * seconds));
     }
 }

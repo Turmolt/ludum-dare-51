@@ -8,7 +8,7 @@ using UnityEngine.Tilemaps;
 public class TilemapFader : MonoBehaviour
 {
     [SerializeField] private Tilemap floorMap;
-    [SerializeField] private EnergyManager energy;
+    private EnergyManager energy;
 
     private List<Tile> redTiles = new();
     private List<Tile> greenTiles = new();
@@ -22,6 +22,7 @@ public class TilemapFader : MonoBehaviour
     
     void Start()
     {
+        energy = FindObjectOfType<EnergyManager>();
         energy.CurrentState.onValueUpdated += () => RefreshTiles();
         ResetColors();
         
