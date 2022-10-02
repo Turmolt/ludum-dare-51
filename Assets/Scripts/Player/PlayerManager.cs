@@ -21,7 +21,8 @@ public class PlayerManager : MonoBehaviour
     private float _timeSinceLastMove = MOVE_DELAY;
 
     private bool canMove = true;
-    
+    private bool moving = false;
+
     void Start()
     {
         clock.OnClockReset += energy.ChangeColor;
@@ -41,6 +42,8 @@ public class PlayerManager : MonoBehaviour
             _timeSinceLastMove += Time.deltaTime;
             return;
         }
+
+        if (moving) return;
         
         var input = GetInput();
         
@@ -51,8 +54,10 @@ public class PlayerManager : MonoBehaviour
         
         var lastMove = CreateLastMove();
 
-        if (!map.MovePlayer(input, ref undoAction)) return;
-
+        if (!map.MovePlayer(input, ref undoAction, () => moving = false)) return;
+        
+        moving = true;
+        
         lastMove.UndoAction = undoAction;
 
         _moveHistory.Push(lastMove);
@@ -78,12 +83,14 @@ public class PlayerManager : MonoBehaviour
 
     public void UndoMove()
     {
+        if (moving) return;
         var previous = _moveHistory.Pop();
         
         if (previous == null) return;
-        
+
+        moving = true;
         energy.Set(previous.State);
-        map.MovePlayerToPosition(previous.Position);
+        map.MovePlayerToPosition(previous.Position, () => moving = false);
         NumberMoves.value = previous.MoveNumber;
         clock.Set(previous.Seconds);
         previous.UndoAction?.Invoke();
@@ -92,10 +99,10 @@ public class PlayerManager : MonoBehaviour
 
     Vector2 GetInput()
     {
-        var left = Input.GetKeyDown(KeyCode.LeftArrow);
-        var right = Input.GetKeyDown(KeyCode.RightArrow);
-        var up = Input.GetKeyDown(KeyCode.UpArrow);
-        var down = Input.GetKeyDown(KeyCode.DownArrow);
+        var left = Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A);
+        var right = Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D);
+        var up = Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W);
+        var down = Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S);
         
         var input = new Vector2();
 

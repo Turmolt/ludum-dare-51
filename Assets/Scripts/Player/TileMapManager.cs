@@ -25,7 +25,7 @@ public class TileMapManager : MonoBehaviour
         failsIndicator = FindObjectOfType<NextMoveFailsIndicator>();
     }
 
-    public bool MovePlayer(Vector2 input, ref Action undoAction)
+    public bool MovePlayer(Vector2 input, ref Action undoAction, Action onComplete = null)
     {
         var playerPosition = (Vector2) player.transform.position;
         var nextPosition = playerPosition + input;
@@ -53,7 +53,7 @@ public class TileMapManager : MonoBehaviour
 
         currentPosition = nextPosition;
         
-        player.transform.TweenPosition(nextPosition, PlayerManager.MOVE_DELAY);
+        player.transform.TweenPosition(nextPosition, PlayerManager.MOVE_DELAY, onComplete);
 
         if (nextTile.name.Contains("Goal"))
         {
@@ -107,10 +107,10 @@ public class TileMapManager : MonoBehaviour
         undoAction += () => tilemap.SetTile(position, currentTile);
     }
 
-    public void MovePlayerToPosition(Vector2 position)
+    public void MovePlayerToPosition(Vector2 position, Action onComplete = null)
     {
         currentPosition = position;
-        player.transform.TweenPosition(position, PlayerManager.MOVE_DELAY);
+        player.transform.TweenPosition(position, PlayerManager.MOVE_DELAY, onComplete);
     }
     
     public EnergyManager.State GetFloorState()
