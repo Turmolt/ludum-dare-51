@@ -20,6 +20,10 @@ public class GameManager : MonoBehaviour
     }
     public void LoadNextLevel()
     {
-        SceneManager.LoadScene("level_two");
+        var currentSceneNumber = SceneManager.GetActiveScene().buildIndex;
+        
+        if (SceneManager.sceneCountInBuildSettings <= currentSceneNumber + 1) return;
+
+        SceneManager.LoadScene(currentSceneNumber + 1);
     }
 }

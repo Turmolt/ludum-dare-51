@@ -17,7 +17,13 @@ public class TileMapManager : MonoBehaviour
     [SerializeField] private Tile greenTile;
     [SerializeField] private Tile blueTile;
     
+    private NextMoveFailsIndicator failsIndicator;
     private Vector3 currentPosition;
+
+    void Start()
+    {
+        failsIndicator = FindObjectOfType<NextMoveFailsIndicator>();
+    }
 
     public bool MovePlayer(Vector2 input, ref Action undoAction)
     {
@@ -28,7 +34,12 @@ public class TileMapManager : MonoBehaviour
         
         var nextTile = floorMap.GetTile(intNextPosition);
 
-        if (nextTile == null || nextTile.name == "Black" || nextTile.name.Contains(energy.StateAfterMove.ToString())) return false;
+        if (nextTile == null || nextTile.name == "Black") return false;
+        if (nextTile.name.Contains(energy.StateAfterMove.ToString()))
+        {
+            failsIndicator.Show();
+            return false;
+        }
 
         var item = itemMap.GetTile(intNextPosition);
 

@@ -13,7 +13,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private EnergyManager energy;
     [SerializeField] private TileMapManager map;
     [SerializeField] private LifeManager life;
-
     [SerializeField] private UIManager ui;
 
 
