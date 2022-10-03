@@ -90,7 +90,7 @@ public class PlayerManager : MonoBehaviour
 
     public void UndoMove()
     {
-        if (moving) return;
+        if (moving || !canMove) return;
         var previous = _moveHistory.Pop();
         
         if (previous == null) return;

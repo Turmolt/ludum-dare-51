@@ -29,11 +29,14 @@ public class UIManager : MonoBehaviour
 
     public void ShowWinScreen()
     {
-        winScreen.interactable = true;
-        winScreen.blocksRaycasts = true;
         numberMovesLabelWin.text = $"{_player.NumberMoves.value}";
         numberUndoLabelWin.text = $"{_player.NumberUndos.value}";
         var tween = new Tween<float>(f => winScreen.alpha = f, winScreen.alpha, 1f, 0.5f, Mathf.Lerp);
+        tween.OnComplete = () =>
+        {
+            winScreen.interactable = true;
+            winScreen.blocksRaycasts = true;
+        };
         tween.Play();
     }
 
