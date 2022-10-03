@@ -9,6 +9,9 @@ public class TileMapManager : MonoBehaviour
 {
     [SerializeField] private PlayerManager player;
     [SerializeField] private EnergyManager energy;
+    [SerializeField] private KeyManager keys;
+    
+    [Header("Tilemaps")]
     [SerializeField] private Tilemap floorMap;
     [SerializeField] private Tilemap itemMap;
     
@@ -23,6 +26,7 @@ public class TileMapManager : MonoBehaviour
     void Start()
     {
         failsIndicator = FindObjectOfType<NextMoveFailsIndicator>();
+        currentPosition = player.transform.position;
     }
 
     public bool MovePlayer(Vector2 input, ref Action undoAction, Action onComplete = null)
@@ -42,7 +46,7 @@ public class TileMapManager : MonoBehaviour
         }
 
         var item = itemMap.GetTile(intNextPosition);
-
+        
         if(!CheckItem(item, intNextPosition, ref undoAction)) return false;
 
         var intCurrentPos = Vector3Int.FloorToInt(currentPosition);
@@ -82,23 +86,23 @@ public class TileMapManager : MonoBehaviour
     {
         if (item == null) return true;
         
-        if (item.name.Contains("Lock"))
+        if (item.name.Contains("Key") && keys != null)
         {
-            return CheckLockColor(item, position, ref undoAction);
+            var lockPosition = keys.GetLockPosition(position);
+            if (lockPosition != null) Unlock(position, lockPosition.Value, ref undoAction);
+            return true;
         }
          
         return false;
     }
 
-    private bool CheckLockColor(TileBase item, Vector3Int position, ref Action undoAction)
+    private void Unlock(Vector3Int position,  Vector3Int lockPosition, ref Action undoAction)
     {
-        var unlocks = item.name.Contains(energy.CurrentState.ToString());
-        if (unlocks)
-        {
-            RecordUndo(itemMap, position, ref undoAction);
-            itemMap.SetTile(position, null);
-        }
-        return unlocks;
+        RecordUndo(itemMap, position, ref undoAction);
+        RecordUndo(itemMap, lockPosition, ref undoAction);
+        
+        itemMap.SetTile(position, null);
+        itemMap.SetTile(lockPosition, null);
     }
 
     private void RecordUndo(Tilemap tilemap, Vector3Int position, ref Action undoAction)
@@ -111,16 +115,5 @@ public class TileMapManager : MonoBehaviour
     {
         currentPosition = position;
         player.transform.TweenPosition(position, PlayerManager.MOVE_DELAY, onComplete);
-    }
-    
-    public EnergyManager.State GetFloorState()
-    {
-        var tile = floorMap.GetTile(Vector3Int.FloorToInt(currentPosition));
-        
-        if (tile.name.Contains("Red")) return EnergyManager.State.Red;
-        if (tile.name.Contains("Green")) return EnergyManager.State.Green;
-        if (tile.name.Contains("Blue")) return EnergyManager.State.Blue;
-        
-        return EnergyManager.State.White;
     }
 }

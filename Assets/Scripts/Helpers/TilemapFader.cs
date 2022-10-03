@@ -56,6 +56,9 @@ public class TilemapFader : MonoBehaviour
         
         var oldTarget = GetTile(energy.LastState);
         Fade(oldTarget, true, force);
+        
+        oldTarget = GetTile(energy.NextState);
+        Fade(oldTarget, true, force);
     }
 
     private void Fade(Tile tile, bool state, bool force = false)

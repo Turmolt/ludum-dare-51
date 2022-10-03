@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Key Icon
+  m_Name: LockIcon
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 69dd0d7d4a4662846a218d66742b366f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a8da9638efe375f4cb2bf59381fbd6eb, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_Transform:
     e00: 1

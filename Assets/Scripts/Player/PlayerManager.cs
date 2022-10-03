@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour
 {
     public const float MOVE_DELAY = 0.15f;
     public Observable<int> NumberMoves = new(0);
+    public Observable<int> NumberUndos = new(0);
 
     [SerializeField] private ClockManager clock;
     [SerializeField] private EnergyManager energy;
@@ -43,6 +44,12 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            UndoMove();
+            return;
+        }
+        
         if (moving) return;
         
         var input = GetInput();
@@ -87,7 +94,7 @@ public class PlayerManager : MonoBehaviour
         var previous = _moveHistory.Pop();
         
         if (previous == null) return;
-
+        NumberUndos.value++;
         moving = true;
         energy.Set(previous.State);
         map.MovePlayerToPosition(previous.Position, () => moving = false);
@@ -103,6 +110,10 @@ public class PlayerManager : MonoBehaviour
         var right = Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D);
         var up = Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W);
         var down = Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S);
+
+        // only move vertically or horizontally, not diagonally
+        up = up && !left && !right;
+        down = down && !left && !right;
         
         var input = new Vector2();
 
@@ -110,7 +121,7 @@ public class PlayerManager : MonoBehaviour
         if (left) input.x -= 1;
         if (up) input.y += 1;
         if (down) input.y -= 1;
-
+        
         return input;
     }
 
